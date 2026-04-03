@@ -22,6 +22,8 @@ Downloads hourly 100m wind velocity components (u and v) from the [Copernicus Cl
 | Period | 1950–2024 |
 | Output format | GRIB (one file per year, saved to `era5_wind_data/`) |
 
+📁 Code: [`files/downloaddata/era5_wind_download.py`](files/downloaddata/era5_wind_download.py)
+
 ### 2. `ercot_spatial_grid.py` — Assign ERA5 grid cells to ERCOT load zones
 
 Generates the full ERA5 grid index for the Texas domain, validates cell alignment, and assigns each grid cell to an ERCOT load zone via a point-in-polygon spatial join against a GeoJSON boundary file.
@@ -33,7 +35,8 @@ Generates the full ERA5 grid index for the Texas domain, validates cell alignmen
 
 > **Note on boundary file:** The `Texas_County_LoadZones.geojson` used in this study was produced by manually classifying Texas counties to ERCOT load zones in QGIS. This file is not included in the repository. To reproduce the analysis, create your own county-to-load-zone classification using publicly available county shapefiles from the [US Census Bureau](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) and ERCOT's published load zone definitions. Export the result as a GeoJSON and place it in the `data/` directory.
 
----
+📁 Code: [`files/ercot_spatial/ercot_spatial_grid.py`](files/ercot_spatial/ercot_spatial_grid.py)
+
 ### 3. `wind_drought_identification.py` — Identify wind energy drought events
 
 Applies a threshold-based event detection algorithm to ERA5-derived capacity factor time series, processing each ERA5 grid cell individually across the full 1950–2024 study period.
