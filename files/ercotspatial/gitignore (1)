@@ -1,0 +1,27 @@
+# CDS API credentials — never commit
+.cdsapirc
+
+# Downloaded data — too large for git
+era5_wind_data/
+*.grib
+*.nc
+*.netcdf
+
+# Spatial and tabular data files — too large or not redistributable
+*.geojson
+*.csv
+*.gpkg
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
