@@ -34,6 +34,25 @@ Generates the full ERA5 grid index for the Texas domain, validates cell alignmen
 > **Note on boundary file:** The `Texas_County_LoadZones.geojson` used in this study was produced by manually classifying Texas counties to ERCOT load zones in QGIS. This file is not included in the repository. To reproduce the analysis, create your own county-to-load-zone classification using publicly available county shapefiles from the [US Census Bureau](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) and ERCOT's published load zone definitions. Export the result as a GeoJSON and place it in the `data/` directory.
 
 ---
+### 3. `wind_drought_identification.py` — Identify wind energy drought events
+
+Applies a threshold-based event detection algorithm to ERA5-derived capacity factor time series, processing each ERA5 grid cell individually across the full 1950–2024 study period.
+
+A wind energy drought is defined as any consecutive sequence of hours where the grid-cell CF falls below a user-specified threshold. The study uses **CF = 0.30** as the primary threshold. The threshold can be adjusted in the configuration block to support sensitivity analyses (e.g. CF = 0.10, 0.15).
+
+For each identified event, the script computes:
+
+| Output column | Description |
+|---|---|
+| `duration` | Number of consecutive below-threshold hours |
+| `total_severity` | Sum of hourly shortfalls (threshold − CF) over the event |
+| `avg_severity` | `total_severity` / `duration` |
+| `pct_severity` | `avg_severity` expressed as a fraction of the threshold |
+| `start_time` | Timestamp of the first hour of the event |
+
+**Output:** one CSV per grid cell, named `wind_drought_{lat_idx}_{lon_idx}.csv`. The script skips cells whose output file already exists, so it is safe to interrupt and resume.
+
+📁 Code: [`files/winddroughtid/wind_drought_identification.py`](files/winddroughtid/wind_drought_identification.py)
 
 ## Setup
 
@@ -67,6 +86,8 @@ python ercot_spatial_grid.py
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
 
 ---
+# Step 3: identify wind drought events for every grid cell
+python files/winddroughtid/wind_drought_identification.py
 
 ## Notes
 
