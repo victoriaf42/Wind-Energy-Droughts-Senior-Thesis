@@ -89,8 +89,6 @@ python ercot_spatial_grid.py
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
 
 ---
-# Step 3: identify wind drought events for every grid cell
-python files/winddroughtid/wind_drought_identification.py
 
 ## Notes
 
