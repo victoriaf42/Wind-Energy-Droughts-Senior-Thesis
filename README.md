@@ -37,7 +37,24 @@ Generates the full ERA5 grid index for the Texas domain, validates cell alignmen
 
 📁 Code: [`files/ercot_spatial/ercot_spatial_grid.py`](files/ercot_spatial/ercot_spatial_grid.py)
 
-### 3. `wind_drought_identification.py` — Identify wind energy drought events
+### 3. `wind_cf_pipeline.py` — Wind speed, capacity factors, validation, and load zone aggregation
+
+Converts ERA5 GRIB files into load-zone-level wind capacity factor (CF) time series. Runs in four sequential stages controlled by the `RUN_STAGES` list at the top of the script — you can run all four in one go or individual stages as needed.
+
+| Stage | Description | Input | Output |
+|---|---|---|---|
+| 1 | Extract 100m u/v wind components and compute resultant wind speed | `{year}.grib` | `{year}_wind_speed.nc` |
+| 2 | Apply Vestas V90-2MW power curve to produce hourly CF estimates | `{year}_wind_speed.nc` | `{year}_wind_cf.nc` |
+| 3 | Compute summary statistics and CF distribution breakdown across all years | `{year}_wind_cf.nc` | `wind_cf_validation_summary.csv` |
+| 4 | Map grid cells to ERCOT load zones and compute capacity-weighted CF time series (2020–2024) | `{year}_wind_cf.nc`, `{year}_plants.xlsx` | `grid_cell_weights_by_lz.csv`, `lz_cf_timeseries.csv` |
+
+> **Note on the power curve:** Stage 2 uses the Vestas V90-2MW turbine curve (cut-in 3 m/s, rated speed 12.5 m/s, cut-out 25 m/s, rated capacity 2 MW). More recently deployed turbines achieve higher CFs; see thesis methodology for discussion.
+
+> **Note on Stage 4 inputs:** The `{year}_plants.xlsx` files containing installed wind plant locations and nameplate capacities are not included in this repository. They were compiled from ERCOT's publicly available generation resource data.
+
+📁 Code: [`files/windcfpipeline/wind_cf_pipeline.py`](files/windcfpipeline/wind_cf_pipeline.py)
+
+### 4. `wind_drought_identification.py` — Identify wind energy drought events
 
 Applies a threshold-based event detection algorithm to ERA5-derived capacity factor time series, processing each ERA5 grid cell individually across the full 1950–2024 study period.
 
@@ -79,11 +96,17 @@ Your key is available at https://cds.climate.copernicus.eu/profile.
 ## Usage
 
 ```bash
-# Step 1: download ERA5 wind data (run first)
-python era5_wind_download.py
+# Step 1: download ERA5 wind data
+python files/downloaddata/era5_wind_download.py
 
-# Step 2: assign grid cells to ERCOT load zones
-python ercot_spatial_grid.py
+# Step 2: assign ERA5 grid cells to ERCOT load zones
+python files/ercot_spatial/ercot_spatial_grid.py
+
+# Step 3: wind speeds → capacity factors → validation → load zone aggregation
+python files/windcfpipeline/wind_cf_pipeline.py
+
+# Step 4: identify wind drought events for every grid cell
+python files/winddroughtid/wind_drought_identification.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
