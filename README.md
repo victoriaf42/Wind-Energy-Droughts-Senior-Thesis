@@ -202,8 +202,8 @@ Implements the statistical tests reported in the vulnerability section. Tests wh
 |---|---|---|---|
 | 1 | Bartlett's test (variance homogeneity) | West + South | `bartletts_test_results.csv` |
 | 2 | Welch's ANOVA (3 specifications) | West + South | `welch_anova_results.csv` |
-| 3 | Proportions z-tests across 10 price thresholds | All 4 zones | `ztest_aggregate_*.csv`, `ztest_duration_*.csv` |
-| 4 | Price exceedance curves | All 4 zones | `exceedance_curves_*.png` |
+| 3 | Proportions z-tests across 10 price thresholds | West + South | `ztest_aggregate_*.csv`, `ztest_duration_*.csv` |
+| 4 | Price exceedance curves | West + South | `exceedance_curves_*.png` |
 
 **Grouping schemes for ANOVA:**
 - Case I: Drought vs No Drought (2 groups)
