@@ -124,7 +124,38 @@ Reads raw ERCOT Settlement Point Price Excel files (one per year, one worksheet 
 
 📁 Code: [`files/electricityprices/ercot_price_aggregation.py`](files/electricityprices/ercot_price_aggregation.py)
 
-### 8. `drought_events_30cf.py` — Drought event summaries and hourly flags (CF = 0.30, 2020–2024)
+### 8. `price_capacity_prep.py` — Merge prices, compute pct_wind, validate capacity
+
+Prepares the merged files used in the formal statistical analyses. Runs three tasks:
+
+| Task | Description | Output |
+|---|---|---|
+| 1 | Joins ERCOT hourly settlement point prices to drought flag files; adds `log(price)` | `LZ_{ZONE}_CF0.3_..._hourly.csv` (updated) |
+| 2 | Computes total, wind, and solar installed capacity by load zone and year from EIA Form 860 data; derives `pct_wind` | `loadzone_capacity_summary.csv` |
+| 3 | Identifies grid cells where installed wind capacity changed year-over-year | `capacity_change_report.csv` |
+
+> **Note on installed capacity data:** Annual plant files (`{year}_all_plants_with_loadzones.xlsx`, `{year}_onshore_wind_turbine.csv`) were compiled from the [EIA Form 860 dataset](https://www.eia.gov/electricity/data/eia860/). Plants were filtered to the ERCOT service territory and matched to ERA5 grid cells by nearest-neighbour lookup on latitude/longitude. Load zone assignments follow ERCOT's published county-to-load-zone mapping. These files are not included in the repository due to size.
+
+> **Note on `pct_wind`:** `pct_wind` is the share of total installed nameplate capacity in a load zone attributable to onshore wind turbines, calculated annually. It is used to compute capacity-weighted drought severity scores in the event files.
+
+📁 Code: [`files/priceprep/price_capacity_prep.py`](files/priceprep/price_capacity_prep.py)
+
+### 9. `lz_drought_detection_2020_2024.py` — Load-zone drought event and hourly files (2020–2024)
+
+Produces the load-zone-level drought event summaries and hourly flag files used throughout the price impact and PPA financial risk analysis. Applies the capacity-fraction trigger: a zone hour is classified as a drought hour when ≥ 50% of the zone's installed wind capacity is simultaneously below the CF threshold.
+
+| Output | File pattern | Description |
+|---|---|---|
+| Hourly flags | `{ZONE}_CF0.3_CapThresh50pct_years_2020_2024_hourly.csv` | One row per hour with `is_drought`, zone average CF, shortfall, capacity metrics, and `pct_wind`-weighted severity |
+| Event summaries | `{ZONE}_CF0.3_CapThresh50pct_years_2020_2024_events.csv` | One row per drought event with duration, severity, and weighted severity metrics |
+
+Set `CF_THRESHOLDS` to a list (e.g. `[0.06, 0.10, 0.15, 0.30]`) to produce files for multiple thresholds in one run — useful for the sensitivity analyses reported in the thesis.
+
+> **Dependency note:** This script requires `loadzone_capacity_summary.csv` produced by `price_capacity_prep.py` (Step 8, Task 2) for `pct_wind` values. Run Step 8 before this step.
+
+📁 Code: [`files/lzdrought2024/lz_drought_detection_2020_2024.py`](files/lzdrought2024/lz_drought_detection_2020_2024.py)
+
+### 10. `drought_events_30cf.py` — Drought event summaries and hourly flags (CF = 0.30, 2020–2024)
 
 Applies the CF = 0.30 drought threshold to the 2020–2024 period, joining year-specific installed wind capacity and load-zone wind share (`pct_wind`) to each event. Produces two complementary outputs per grid cell used in the price impact and PPA financial risk analysis.
 
@@ -141,21 +172,6 @@ Applies the CF = 0.30 drought threshold to the 2020–2024 period, joining year-
 
 📁 Code: [`files/below30cf/drought_events_30cf.py`](files/below30cf/drought_events_30cf.py)
 
-### 9. `price_capacity_prep.py` — Merge prices, compute pct_wind, validate capacity
-
-Prepares the merged files used in the formal statistical analyses. Runs three tasks:
-
-| Task | Description | Output |
-|---|---|---|
-| 1 | Joins ERCOT hourly settlement point prices to drought flag files; adds `log(price)` | `LZ_{ZONE}_CF0.3_..._hourly.csv` (updated) |
-| 2 | Computes total, wind, and solar installed capacity by load zone and year from EIA Form 860 data; derives `pct_wind` | `loadzone_capacity_summary.csv` |
-| 3 | Identifies grid cells where installed wind capacity changed year-over-year | `capacity_change_report.csv` |
-
-> **Note on installed capacity data:** Annual plant files (`{year}_all_plants_with_loadzones.xlsx`, `{year}_onshore_wind_turbine.csv`) were compiled from the [EIA Form 860 dataset](https://www.eia.gov/electricity/data/eia860/). Plants were filtered to the ERCOT service territory and matched to ERA5 grid cells by nearest-neighbour lookup on latitude/longitude. Load zone assignments follow ERCOT's published county-to-load-zone mapping. These files are not included in the repository due to size.
-
-> **Note on `pct_wind`:** `pct_wind` is the share of total installed nameplate capacity in a load zone attributable to onshore wind turbines, calculated annually. It is used to compute capacity-weighted drought severity scores in the event files.
-
-📁 Code: [`files/priceprep/price_capacity_prep.py`](files/priceprep/price_capacity_prep.py)
 
 ## Setup
 
@@ -200,11 +216,14 @@ python files/droughtanalysis/exploratory_drought_hazard.py
 # Step 7: aggregate raw ERCOT settlement point prices to hourly
 python files/electricityprices/ercot_price_aggregation.py
 
-# Step 8: identify drought events at CF=0.30 and build hourly flags (2020–2024)
-python files/drought30cf/drought_events_30cf.py
-
-# Step 9: merge prices, compute pct_wind, validate capacity
+# Step 8: merge prices, compute pct_wind, validate capacity
 python files/priceprep/price_capacity_prep.py
+
+# Step 9: produce load-zone drought event and hourly files (2020–2024)
+python files/lzdrought2024/lz_drought_detection_2020_2024.py
+
+# Step 10: identify drought events at CF=0.30 and build hourly flags (2020–2024)
+python files/drought30cf/drought_events_30cf.py
 
 ```
 
