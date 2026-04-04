@@ -143,12 +143,6 @@ Prepares the merged files used in the formal statistical analyses. Runs three ta
 
 📁 Code: [`files/priceprep/price_capacity_prep.py`](files/priceprep/price_capacity_prep.py)
 
-### Optional: `exploratory_drought_hazard.py` — Historical hazard visualisations (West & South)
-
-Produces exploratory figures characterising the historical wind energy drought hazard for LZ_WEST and LZ_SOUTH using the 1950–2024 event file from `lz_drought_events_historical.py`. Includes duration histograms, annual exceedance probability surfaces, return period surfaces, seasonal event counts and severity, and monthly exceedance probability curves.
-
-📁 Code: [`files/exploratory/exploratory_drought_hazard.py`](files/exploratory/exploratory_drought_hazard.py)
-
 ## Setup
 
 **1. Install dependencies**
@@ -194,8 +188,6 @@ python files/drought30cf/drought_events_30cf.py
 
 # Step 8: merge prices, compute pct_wind, validate capacity
 python files/priceprep/price_capacity_prep.py
-# Optional — historical drought hazard figures (West & South, CF=0.30)
-python files/exploratory/exploratory_drought_hazard.py
 
 ```
 
