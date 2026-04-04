@@ -141,6 +141,9 @@ python files/winddroughtid/wind_drought_identification.py
 
 # Step 5: aggregate raw ERCOT settlement point prices to hourly
 python files/electricityprices/ercot_price_aggregation.py
+
+# Step 6: identify drought events at CF=0.30 and build hourly flags (2020–2024)
+python files/drought30cf/drought_events_30cf.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
