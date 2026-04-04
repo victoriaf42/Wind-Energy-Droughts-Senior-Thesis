@@ -95,7 +95,21 @@ Identifies wind energy drought events at the ERCOT load zone level across the fu
 
 📁 Code: [`files/lzdroughthistorical/lz_drought_events_historical.py`](files/lzdroughthistorical/lz_drought_events_historical.py)
 
-### 6. `ercot_price_aggregation.py` — Aggregate ERCOT settlement point prices to hourly
+### 6. `exploratory_drought_hazard.py` — Historical drought hazard analysis (West & South, 1950–2024)
+
+Characterises the historical wind energy drought hazard for LZ_WEST and LZ_SOUTH using the event file produced by `lz_drought_events_historical.py`. Produces the figures and summary statistics reported in the hazard section of the thesis.
+
+| Analysis | Description |
+|---|---|
+| Duration histograms | Probability density of event duration with median marked |
+| Exceedance probability surface | Annual probability of events exceeding joint (duration, CF) thresholds |
+| Return period surface | Same threshold grid expressed as return period in years |
+| Seasonal analysis | Event counts and severity scores by season |
+| Monthly exceedance probability | Probability of at least one event exceeding duration thresholds by calendar month |
+
+📁 Code: [`files/droughtanalysis/exploratory_drought_hazard.py`](files/droughtanalysis/exploratory_drought_hazard.py)
+
+### 7. `ercot_price_aggregation.py` — Aggregate ERCOT settlement point prices to hourly
 
 Reads raw ERCOT Settlement Point Price Excel files (one per year, one worksheet per month) and produces a single clean hourly CSV covering 2020–2024. This file is a required input for all downstream price analyses.
 
@@ -110,7 +124,7 @@ Reads raw ERCOT Settlement Point Price Excel files (one per year, one worksheet 
 
 📁 Code: [`files/electricityprices/ercot_price_aggregation.py`](files/electricityprices/ercot_price_aggregation.py)
 
-### 7. `drought_events_30cf.py` — Drought event summaries and hourly flags (CF = 0.30, 2020–2024)
+### 8. `drought_events_30cf.py` — Drought event summaries and hourly flags (CF = 0.30, 2020–2024)
 
 Applies the CF = 0.30 drought threshold to the 2020–2024 period, joining year-specific installed wind capacity and load-zone wind share (`pct_wind`) to each event. Produces two complementary outputs per grid cell used in the price impact and PPA financial risk analysis.
 
@@ -127,7 +141,7 @@ Applies the CF = 0.30 drought threshold to the 2020–2024 period, joining year-
 
 📁 Code: [`files/below30cf/drought_events_30cf.py`](files/below30cf/drought_events_30cf.py)
 
-### 8. `price_capacity_prep.py` — Merge prices, compute pct_wind, validate capacity
+### 9. `price_capacity_prep.py` — Merge prices, compute pct_wind, validate capacity
 
 Prepares the merged files used in the formal statistical analyses. Runs three tasks:
 
@@ -180,13 +194,16 @@ python files/winddroughtid/wind_drought_identification.py
 # Step 5: identify load-zone drought events across full historical period (1950–2024)
 python files/lzdroughthistorical/lz_drought_events_historical.py
 
-# Step 6: aggregate raw ERCOT settlement point prices to hourly
+# Step 6: historical drought hazard analysis — figures and summary statistics
+python files/droughtanalysis/exploratory_drought_hazard.py
+
+# Step 7: aggregate raw ERCOT settlement point prices to hourly
 python files/electricityprices/ercot_price_aggregation.py
 
-# Step 7: identify drought events at CF=0.30 and build hourly flags (2020–2024)
+# Step 8: identify drought events at CF=0.30 and build hourly flags (2020–2024)
 python files/drought30cf/drought_events_30cf.py
 
-# Step 8: merge prices, compute pct_wind, validate capacity
+# Step 9: merge prices, compute pct_wind, validate capacity
 python files/priceprep/price_capacity_prep.py
 
 ```
