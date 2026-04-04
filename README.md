@@ -74,7 +74,22 @@ For each identified event, the script computes:
 
 📁 Code: [`files/winddroughtid/wind_drought_identification.py`](files/winddroughtid/wind_drought_identification.py)
 
-### 5. `drought_events_30cf.py` — Drought event summaries and hourly flags (CF = 0.30, 2020–2024)
+### 5. `ercot_price_aggregation.py` — Aggregate ERCOT settlement point prices to hourly
+
+Reads raw ERCOT Settlement Point Price Excel files (one per year, one worksheet per month) and produces a single clean hourly CSV covering 2020–2024. This file is a required input for all downstream price analyses.
+
+| Field | Value |
+|---|---|
+| Source | ERCOT Historical RTM Settlement Point Prices |
+| Input | `{year}.xlsx` — annual Excel files, one sheet per month |
+| Output | `ercot_hourly_aggregated_prices_2020-2024.csv` — columns: `hour`, `load_zone`, `price` |
+| Zones retained | LZ_WEST, LZ_NORTH, LZ_SOUTH, LZ_HOUSTON |
+
+> **Note on raw price files:** The annual ERCOT SPP Excel files are not included in the repository. They can be downloaded from the [ERCOT market data portal](https://www.ercot.com/mktinfo/prices) under "Historical RTM Settlement Point Prices". Each file contains 15-minute interval prices; this script averages across intervals to produce hourly values. ERCOT uses a 1–24 hour convention (Hour 1 = midnight to 1am); the script converts to standard 0-based datetime notation.
+
+📁 Code: [`files/electricityprices/ercot_price_aggregation.py`](files/electricityprices/ercot_price_aggregation.py)
+
+### 6. `drought_events_30cf.py` — Drought event summaries and hourly flags (CF = 0.30, 2020–2024)
 
 Applies the CF = 0.30 drought threshold to the 2020–2024 period, joining year-specific installed wind capacity and load-zone wind share (`pct_wind`) to each event. Produces two complementary outputs per grid cell used in the price impact and PPA financial risk analysis.
 
@@ -89,7 +104,7 @@ Applies the CF = 0.30 drought threshold to the 2020–2024 period, joining year-
 
 > **Note on capacity files:** `{year}_onshore_wind_turbine.csv` and `{year}_all_plants_with_loadzones.xlsx` are not included in the repository. They were compiled from the [EIA Form 860 dataset](https://www.eia.gov/electricity/data/eia860/) — plants filtered to ERCOT load zones, matched to ERA5 grid cells by nearest-neighbour lookup on latitude/longitude.
 
-📁 Code: [`files/drought30cf/drought_events_30cf.py`](files/drought30cf/drought_events_30cf.py)
+📁 Code: [`files/below30cf/drought_events_30cf.py`](files/below30cf/drought_events_30cf.py)
 ## Setup
 
 **1. Install dependencies**
@@ -123,6 +138,9 @@ python files/windcfpipeline/wind_cf_pipeline.py
 
 # Step 4: identify wind drought events for every grid cell
 python files/winddroughtid/wind_drought_identification.py
+
+# Step 5: aggregate raw ERCOT settlement point prices to hourly
+python files/electricityprices/ercot_price_aggregation.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
