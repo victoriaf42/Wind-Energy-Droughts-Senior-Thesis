@@ -194,6 +194,28 @@ Merges ERCOT hourly settlement point prices into the load-zone hourly drought fl
 
 📁 Code: [`files/pricemerge/price_merge.py`](files/pricemerge/price_merge.py)
 
+### 13. `vulnerability_analysis.py` — Bartlett's test, Welch's ANOVA, and proportions z-tests
+
+Implements the statistical tests reported in the vulnerability section. Tests whether wind energy drought conditions are associated with significantly different electricity prices, under progressively finer grouping schemes.
+
+| Stage | Test | Scope | Output |
+|---|---|---|---|
+| 1 | Bartlett's test (variance homogeneity) | West + South | `bartletts_test_results.csv` |
+| 2 | Welch's ANOVA (3 specifications) | West + South | `welch_anova_results.csv` |
+| 3 | Proportions z-tests across 10 price thresholds | All 4 zones | `ztest_aggregate_*.csv`, `ztest_duration_*.csv` |
+| 4 | Price exceedance curves | All 4 zones | `exceedance_curves_*.png` |
+
+**Grouping schemes for ANOVA:**
+- Case I: Drought vs No Drought (2 groups)
+- Case II: Duration bins + No Drought (7 groups: <10h, 10–18h, 18–24h, 24–48h, 48–72h, ≥72h)
+- Case III: Duration × CF severity bins + No Drought (25 groups)
+
+> **Scope note:** Bartlett's test and Welch's ANOVA use West and South zones only (highest wind penetration, primary focus of the PPA analysis). Z-tests and exceedance curves use all four zones.
+
+> **Dependency:** requires `pingouin` for Welch's ANOVA — `pip install pingouin`. Bartlett's tests and z-tests will still run without it.
+
+📁 Code: [`files/vulnerability/vulnerability_analysis.py`](files/vulnerability/vulnerability_analysis.py)
+
 ## Setup
 
 **1. Install dependencies**
@@ -252,6 +274,8 @@ python files/gridlzalignment/grid_lz_drought_alignment.py
 # Step 12: merge ERCOT prices into hourly drought files
 python files/pricemerge/price_merge.py
 
+# Step 13: Bartlett's test, Welch's ANOVA, and proportions z-tests
+python files/vulnerability/vulnerability_analysis.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
