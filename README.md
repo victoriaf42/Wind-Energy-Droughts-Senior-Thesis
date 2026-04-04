@@ -210,7 +210,7 @@ Implements the statistical tests reported in the vulnerability section. Tests wh
 - Case II: Duration bins + No Drought (7 groups: <10h, 10–18h, 18–24h, 24–48h, 48–72h, ≥72h)
 - Case III: Duration × CF severity bins + No Drought (25 groups)
 
-> **Scope note:** Bartlett's test and Welch's ANOVA use West and South zones only (highest wind penetration, primary focus of the PPA analysis). Z-tests and exceedance curves use all four zones.
+> **Scope:** All stages use **West and South zones only** — these have the highest wind penetration in ERCOT and are the primary focus of the PPA financial risk analysis.
 
 > **Dependency:** requires `pingouin` for Welch's ANOVA — `pip install pingouin`. Bartlett's tests and z-tests will still run without it.
 
