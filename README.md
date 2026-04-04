@@ -126,6 +126,29 @@ Applies the CF = 0.30 drought threshold to the 2020–2024 period, joining year-
 > **Note on capacity files:** `{year}_onshore_wind_turbine.csv` and `{year}_all_plants_with_loadzones.xlsx` are not included in the repository. They were compiled from the [EIA Form 860 dataset](https://www.eia.gov/electricity/data/eia860/) — plants filtered to ERCOT load zones, matched to ERA5 grid cells by nearest-neighbour lookup on latitude/longitude.
 
 📁 Code: [`files/below30cf/drought_events_30cf.py`](files/below30cf/drought_events_30cf.py)
+
+### 8. `price_capacity_prep.py` — Merge prices, compute pct_wind, validate capacity
+
+Prepares the merged files used in the formal statistical analyses. Runs three tasks:
+
+| Task | Description | Output |
+|---|---|---|
+| 1 | Joins ERCOT hourly settlement point prices to drought flag files; adds `log(price)` | `LZ_{ZONE}_CF0.3_..._hourly.csv` (updated) |
+| 2 | Computes total, wind, and solar installed capacity by load zone and year from EIA Form 860 data; derives `pct_wind` | `loadzone_capacity_summary.csv` |
+| 3 | Identifies grid cells where installed wind capacity changed year-over-year | `capacity_change_report.csv` |
+
+> **Note on installed capacity data:** Annual plant files (`{year}_all_plants_with_loadzones.xlsx`, `{year}_onshore_wind_turbine.csv`) were compiled from the [EIA Form 860 dataset](https://www.eia.gov/electricity/data/eia860/). Plants were filtered to the ERCOT service territory and matched to ERA5 grid cells by nearest-neighbour lookup on latitude/longitude. Load zone assignments follow ERCOT's published county-to-load-zone mapping. These files are not included in the repository due to size.
+
+> **Note on `pct_wind`:** `pct_wind` is the share of total installed nameplate capacity in a load zone attributable to onshore wind turbines, calculated annually. It is used to compute capacity-weighted drought severity scores in the event files.
+
+📁 Code: [`files/priceprep/price_capacity_prep.py`](files/priceprep/price_capacity_prep.py)
+
+### Optional: `exploratory_drought_hazard.py` — Historical hazard visualisations (West & South)
+
+Produces exploratory figures characterising the historical wind energy drought hazard for LZ_WEST and LZ_SOUTH using the 1950–2024 event file from `lz_drought_events_historical.py`. Includes duration histograms, annual exceedance probability surfaces, return period surfaces, seasonal event counts and severity, and monthly exceedance probability curves.
+
+📁 Code: [`files/exploratory/exploratory_drought_hazard.py`](files/exploratory/exploratory_drought_hazard.py)
+
 ## Setup
 
 **1. Install dependencies**
@@ -168,6 +191,12 @@ python files/electricityprices/ercot_price_aggregation.py
 
 # Step 7: identify drought events at CF=0.30 and build hourly flags (2020–2024)
 python files/drought30cf/drought_events_30cf.py
+
+# Step 8: merge prices, compute pct_wind, validate capacity
+python files/priceprep/price_capacity_prep.py
+# Optional — historical drought hazard figures (West & South, CF=0.30)
+python files/exploratory/exploratory_drought_hazard.py
+
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
