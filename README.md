@@ -74,7 +74,28 @@ For each identified event, the script computes:
 
 📁 Code: [`files/winddroughtid/wind_drought_identification.py`](files/winddroughtid/wind_drought_identification.py)
 
-### 5. `ercot_price_aggregation.py` — Aggregate ERCOT settlement point prices to hourly
+### 5. `lz_drought_events_historical.py` — Load-zone drought event identification (1950–2024)
+
+Identifies wind energy drought events at the ERCOT load zone level across the full 1950–2024 study period. Unlike `wind_drought_identification.py` (which operates at the individual ERA5 grid cell level), this script aggregates across all grid cells within a zone and applies a **capacity-fraction trigger**: a zone hour is classified as a drought hour only if at least 50% of the zone's 2024 installed wind capacity is simultaneously below the CF = 0.30 threshold.
+
+| Field | Value |
+|---|---|
+| CF threshold | 0.30 |
+| Capacity trigger | ≥ 50% of zone MW below threshold (CapThresh50pct) |
+| Capacity weights | 2024 installed capacity — fixed throughout (see note) |
+| Output | `ALL_ZONES_events_all_1950_2024_CF0.3_cap50pct.csv` |
+
+**Output columns:** `load_zone`, `start_time`, `end_time`, `duration`, `avg_zone_cf` (capacity-weighted average CF during the event), `total_severity`, `avg_severity`, `pct_severity`.
+
+> **Why 2024 capacity weights for the full historical period?** The goal is to characterise the meteorological hazard that the *current* (2024) wind fleet would face if historical weather conditions recurred — not to reconstruct what a historically changing fleet would have experienced. Using fixed 2024 weights makes the 1950–2024 hazard statistics directly comparable to the 2020–2024 financial risk analysis.
+
+> **Note on capacity file:** `2024_onshore_wind_turbine.csv` was compiled from the EIA Form 860 dataset and is not included in the repository. See README data source notes.
+
+> **Runtime:** Processing 75 years × 4 zones × ~123 grid cells takes approximately 20–60 minutes depending on hardware.
+
+📁 Code: [`files/lzdroughthistorical/lz_drought_events_historical.py`](files/lzdroughthistorical/lz_drought_events_historical.py)
+
+### 6. `ercot_price_aggregation.py` — Aggregate ERCOT settlement point prices to hourly
 
 Reads raw ERCOT Settlement Point Price Excel files (one per year, one worksheet per month) and produces a single clean hourly CSV covering 2020–2024. This file is a required input for all downstream price analyses.
 
@@ -89,7 +110,7 @@ Reads raw ERCOT Settlement Point Price Excel files (one per year, one worksheet 
 
 📁 Code: [`files/electricityprices/ercot_price_aggregation.py`](files/electricityprices/ercot_price_aggregation.py)
 
-### 6. `drought_events_30cf.py` — Drought event summaries and hourly flags (CF = 0.30, 2020–2024)
+### 7. `drought_events_30cf.py` — Drought event summaries and hourly flags (CF = 0.30, 2020–2024)
 
 Applies the CF = 0.30 drought threshold to the 2020–2024 period, joining year-specific installed wind capacity and load-zone wind share (`pct_wind`) to each event. Produces two complementary outputs per grid cell used in the price impact and PPA financial risk analysis.
 
@@ -139,10 +160,13 @@ python files/windcfpipeline/wind_cf_pipeline.py
 # Step 4: identify wind drought events for every grid cell
 python files/winddroughtid/wind_drought_identification.py
 
-# Step 5: aggregate raw ERCOT settlement point prices to hourly
+# Step 5: identify load-zone drought events across full historical period (1950–2024)
+python files/lzdroughthistorical/lz_drought_events_historical.py
+
+# Step 6: aggregate raw ERCOT settlement point prices to hourly
 python files/electricityprices/ercot_price_aggregation.py
 
-# Step 6: identify drought events at CF=0.30 and build hourly flags (2020–2024)
+# Step 7: identify drought events at CF=0.30 and build hourly flags (2020–2024)
 python files/drought30cf/drought_events_30cf.py
 ```
 
