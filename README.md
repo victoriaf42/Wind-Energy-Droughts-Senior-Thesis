@@ -124,21 +124,18 @@ Reads raw ERCOT Settlement Point Price Excel files (one per year, one worksheet 
 
 📁 Code: [`files/electricityprices/ercot_price_aggregation.py`](files/electricityprices/ercot_price_aggregation.py)
 
-### 8. `price_capacity_prep.py` — Merge prices, compute pct_wind, validate capacity
+### 8. `capacity_summary.py` — Compute pct_wind and installed capacity summary
 
-Prepares the merged files used in the formal statistical analyses. Runs three tasks:
+Reads annual EIA Form 860 plant files and computes total installed capacity and wind share (`pct_wind`) per ERCOT load zone per year. Also validates year-over-year capacity changes at the grid cell level.
 
-| Task | Description | Output |
-|---|---|---|
-| 1 | Joins ERCOT hourly settlement point prices to drought flag files; adds `log(price)` | `LZ_{ZONE}_CF0.3_..._hourly.csv` (updated) |
-| 2 | Computes total, wind, and solar installed capacity by load zone and year from EIA Form 860 data; derives `pct_wind` | `loadzone_capacity_summary.csv` |
-| 3 | Identifies grid cells where installed wind capacity changed year-over-year | `capacity_change_report.csv` |
+| Output | Description |
+|---|---|
+| `loadzone_capacity_summary.csv` | Total, wind, solar, and `pct_wind` by load zone and year |
+| `capacity_change_report.csv` | Grid cells where installed wind capacity changed across years |
 
-> **Note on installed capacity data:** Annual plant files (`{year}_all_plants_with_loadzones.xlsx`, `{year}_onshore_wind_turbine.csv`) were compiled from the [EIA Form 860 dataset](https://www.eia.gov/electricity/data/eia860/). Plants were filtered to the ERCOT service territory and matched to ERA5 grid cells by nearest-neighbour lookup on latitude/longitude. Load zone assignments follow ERCOT's published county-to-load-zone mapping. These files are not included in the repository due to size.
+> **Must run before Step 9** — `pct_wind` from this file is required by `lz_drought_detection_2020_2024.py` to compute capacity-weighted severity scores.
 
-> **Note on `pct_wind`:** `pct_wind` is the share of total installed nameplate capacity in a load zone attributable to onshore wind turbines, calculated annually. It is used to compute capacity-weighted drought severity scores in the event files.
-
-📁 Code: [`files/priceprep/price_capacity_prep.py`](files/priceprep/price_capacity_prep.py)
+📁 Code: [`files/capacitysummary/capacity_summary.py`](files/capacitysummary/capacity_summary.py)
 
 ### 9. `lz_drought_detection_2020_2024.py` — Load-zone drought event and hourly files (2020–2024)
 
@@ -172,6 +169,30 @@ Applies the CF = 0.30 drought threshold to the 2020–2024 period, joining year-
 
 📁 Code: [`files/below30cf/drought_events_30cf.py`](files/below30cf/drought_events_30cf.py)
 
+### 11. `grid_lz_drought_alignment.py` — Grid-cell to load-zone drought alignment analysis
+
+Quantifies how well individual ERA5 grid cells represent their assigned ERCOT load zone in terms of wind energy drought co-occurrence, using the 2020–2024 hourly drought files. Produces an alignment score for each grid cell combining Spearman correlation and conditional probability statistics.
+
+| Output | Description |
+|---|---|
+| `grid_loadzone_correlations_hourly30cf.csv` | Spearman correlation between grid and zone CF shortfall, plus drought overlap statistics |
+| `grid_loadzone_conditional_probs_hourly30cf.csv` | P(LZ drought \| grid drought) with 95% Wilson confidence intervals |
+| `grid_loadzone_correlations_scored_allcells_hourly30cf.csv` | Final scored file with grid coordinates — score = ci_low_95² × Spearman r |
+| `alignment_score_map_LZ_WEST_LZ_SOUTH.png` | Spatial map of alignment scores for West and South zones |
+
+The alignment score reflects how reliably a grid-cell drought signals a zone-wide generation shortfall. Grid cells with high scores are most relevant for the PPA financial risk analysis.
+
+> **Note on spatial maps:** Requires `ercot.gpkg` (QGIS boundary file) and optionally `contextily` for basemap tiles (`pip install contextily`). Maps will be skipped gracefully if these are unavailable.
+
+📁 Code: [`files/gridlzalignment/grid_lz_drought_alignment.py`](files/gridlzalignment/grid_lz_drought_alignment.py)
+
+### 12. `price_merge.py` — Join ERCOT prices into hourly drought files
+
+Merges ERCOT hourly settlement point prices into the load-zone hourly drought flag files and adds log-transformed prices. The merged files are the primary inputs for the Welch's ANOVA and proportions z-tests.
+
+> Log prices are NaN for hours with zero or negative prices (ERCOT negative pricing events). Excluded hour counts are reported to the console.
+
+📁 Code: [`files/pricemerge/price_merge.py`](files/pricemerge/price_merge.py)
 
 ## Setup
 
@@ -216,14 +237,20 @@ python files/droughtanalysis/exploratory_drought_hazard.py
 # Step 7: aggregate raw ERCOT settlement point prices to hourly
 python files/electricityprices/ercot_price_aggregation.py
 
-# Step 8: merge prices, compute pct_wind, validate capacity
-python files/priceprep/price_capacity_prep.py
+# Step 8: compute pct_wind and installed capacity summary
+python files/capacitysummary/capacity_summary.py
 
 # Step 9: produce load-zone drought event and hourly files (2020–2024)
 python files/lzdrought2024/lz_drought_detection_2020_2024.py
 
 # Step 10: identify drought events at CF=0.30 and build hourly flags (2020–2024)
 python files/drought30cf/drought_events_30cf.py
+
+# Step 11: grid-cell to load-zone drought alignment analysis
+python files/gridlzalignment/grid_lz_drought_alignment.py
+
+# Step 12: merge ERCOT prices into hourly drought files
+python files/pricemerge/price_merge.py
 
 ```
 
