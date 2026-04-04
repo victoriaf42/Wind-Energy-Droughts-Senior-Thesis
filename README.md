@@ -35,7 +35,7 @@ Generates the full ERA5 grid index for the Texas domain, validates cell alignmen
 
 > **Note on boundary file:** The `Texas_County_LoadZones.geojson` used in this study was produced by manually classifying Texas counties to ERCOT load zones in QGIS. This file is not included in the repository. To reproduce the analysis, create your own county-to-load-zone classification using publicly available county shapefiles from the [US Census Bureau](https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html) and ERCOT's published load zone definitions. Export the result as a GeoJSON and place it in the `data/` directory.
 
-📁 Code: [`files/ercot_spatial/ercotspatial_grid.py`](files/ercotspatial/ercot_spatial_grid.py)
+📁 Code: [`files/ercotspatial/ercot_spatial_grid.py`](files/ercotspatial/ercot_spatial_grid.py)
 
 ### 3. `wind_cf_pipeline.py` — Wind speed, capacity factors, validation, and load zone aggregation
 
