@@ -216,6 +216,25 @@ Implements the statistical tests reported in the vulnerability section. Tests wh
 
 📁 Code: [`files/vulnerability/vulnerability_analysis.py`](files/vulnerability/vulnerability_analysis.py)
 
+### 14. `ppa_financial_simulations.py` — PPA financial risk simulations and DSCR analysis
+
+Implements the physical PPA simulation framework from Section 3.4, quantifying combined price and volume risk across 48 sampled grid cells in the West and South load zones (2020–2024).
+
+| Part | Description | Output |
+|---|---|---|
+| 1 | Hourly and monthly revenue simulation — all 48 cells × 4 contract levels | `all_cells_revenue_summary_by_cell.csv` |
+| 2 | Consecutive shortfall event duration analysis by cell, zone, and contract | `all_cells_shortfall_duration_by_cell_and_contract.csv` |
+| 3 | Monthly and annual DSCR against $683,474/month debt service benchmark | `all_cells_dscr_summary.csv`, `all_cells_annual_dscr.csv` |
+| Figures | Monthly revenue box plots, shortfall duration by zone, DSCR time-series curves, DSCR ECDF | `output/ppa_financial_simulations/figures/` |
+
+**Key assumptions:** Nameplate 100 MW · PPA price $50/MWh · Contract obligations 25/30/35/40 MWh/hour · Monthly debt service $683,474 (IRENA 2025 CapEx + NREL ATB 2024 WACC) · Uri excluded (Feb 10–20 2021) · Negative price hours excluded.
+
+> **Input files:** The 48 `*_sample.csv` files in `SAMPLE_DIR` combine ERA5-derived hourly capacity factors with concurrent ERCOT real-time spot prices for each sampled grid cell. These files are not included in the repository due to size. See README data source notes for construction details.
+
+> **Excluded from this script:** Single-cell exploratory analyses for grid cells 38_36, 14_26, and 6_23 from the original notebooks are not reproduced here as they are not part of the thesis Section 3.4 results.
+
+📁 Code: [`files/ppasimulations/ppa_financial_simulations.py`](files/ppasimulations/ppa_financial_simulations.py)
+
 ## Setup
 
 **1. Install dependencies**
@@ -276,6 +295,9 @@ python files/pricemerge/price_merge.py
 
 # Step 13: Bartlett's test, Welch's ANOVA, and proportions z-tests
 python files/vulnerability/vulnerability_analysis.py
+
+# Step 14: PPA financial risk simulations and DSCR analysis
+python files/ppasimulations/ppa_financial_simulations.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
