@@ -1,8 +1,8 @@
-# Wind Energy Droughts — Data Preparation Pipeline
+# Wind Energy Droughts — Data Preparation & Modeling Pipeline
 
 Replication code for the data preparation pipeline used in:
 
-> [Your Name] (2025). *[Thesis Title]*. [Institution].
+> Victoria Farella (2025). *[Thesis Title]*. University of North Carolina at Chapel Hill.
 
 This repository contains two scripts that together produce the spatial ERA5 wind dataset used in the analysis. Run them in order.
 
