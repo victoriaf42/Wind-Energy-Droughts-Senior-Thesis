@@ -251,6 +251,21 @@ Implements the physical PPA simulation framework from Section 3.4, quantifying c
 
 📁 Code: [`files/ppasimulations/ppa_financial_simulations.py`](files/ppasimulations/ppa_financial_simulations.py)
 
+### 16. `representative_cell_financial_risk.py` — Single-cell financial risk and DSCR (Cell 6_23, West)
+
+Applies the physical PPA financial mechanics to a single representative grid cell in the West load zone (cell 6_23) under a 30 MWh contract at $50/MWh. Provides a detailed single-cell illustration of the risk framework before it is applied at scale in `ppa_financial_simulations.py`.
+
+| Output | Description |
+|---|---|
+| `6_23_hourly_cash_flows.csv` | Hourly generation, shortfall, excess, PPA revenue, net gain/loss |
+| `6_23_monthly_dscr.csv` | Monthly DSCR with 1.0/1.2/1.3 breach indicators |
+| `6_23_annual_dscr.csv` | Annual DSCR per year with breach indicators |
+| Figures | Hourly net gains/losses distribution, monthly DSCR time series, DSCR ECDF, annual DSCR bar chart |
+
+> To analyse a different representative cell, update `SAMPLE_FILE` and `CELL_ID` in the configuration block.
+
+📁 Code: [`files/ppasimulations/representative_cell_financial_risk.py`](files/ppasimulations/representative_cell_financial_risk.py)
+
 ## Setup
 
 **1. Install dependencies**
@@ -315,8 +330,11 @@ python files/vulnerability/vulnerability_analysis.py
 # Step 14: derive debt service estimates from financing assumptions
 python files/ppasimulations/debt_financing_assumptions.py
 
-# Step 15: PPA financial risk simulations and DSCR analysis
+# Step 15: PPA financial risk simulations and DSCR analysis — all 48 cells
 python files/ppasimulations/ppa_financial_simulations.py
+
+# Step 16: single-cell financial risk and DSCR — representative West cell (6_23)
+python files/ppasimulations/representative_cell_financial_risk.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
