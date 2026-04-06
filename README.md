@@ -266,6 +266,26 @@ Applies the physical PPA financial mechanics to a single representative grid cel
 
 📁 Code: [`files/ppasimulations/representative_cell_financial_risk.py`](files/ppasimulations/representative_cell_financial_risk.py)
 
+### 17. `risk_management_storage.py` — Risk management: battery storage and storage + insurance (Cell 6_23)
+
+Evaluates two layered risk management strategies against the unhedged baseline for the representative West load zone cell, measuring their effect on monthly and annual DSCR.
+
+| Strategy | Description |
+|---|---|
+| Battery only | 5 MW / 4-hour co-located battery covers 0–5 MWh shortfall for the first 4 consecutive hours of each shortfall event. Cost annualised at $330/kWh CapEx, 4% discount rate, 10-year life → $67,810/month |
+| Battery + Insurance | Battery layer as above, plus insurance covering the 20–30 MWh shortfall layer when spot price ≥ $100/MWh. Premium = 1.30× mean historical monthly payout |
+
+| Output | Description |
+|---|---|
+| `6_23_monthly_battery_only.csv` | Monthly revenue and DSCR: baseline vs battery |
+| `6_23_annual_dscr_battery_only.csv` | Annual DSCR: baseline vs battery |
+| `6_23_monthly_battery_insurance.csv` | Monthly revenue and DSCR: baseline vs battery + insurance |
+| `6_23_annual_dscr_battery_insurance.csv` | Annual DSCR: baseline vs battery + insurance |
+| Figures | Monthly revenue comparison, monthly DSCR time series, annual DSCR bar charts — for both strategies |
+
+> **Battery source:** NREL (2025). *Cost Projections for Utility-Scale Battery Storage: 2025 Update.* https://docs.nrel.gov/docs/fy25osti/93281.pdf
+
+📁 Code: [`files/riskmanagement/risk_management_storage.py`](files/riskmanagement/risk_management_storage.py)
 ## Setup
 
 **1. Install dependencies**
@@ -335,6 +355,9 @@ python files/ppasimulations/ppa_financial_simulations.py
 
 # Step 16: single-cell financial risk and DSCR — representative West cell (6_23)
 python files/ppasimulations/representative_cell_financial_risk.py
+
+# Step 17: risk management — battery storage and storage + insurance (Cell 6_23)
+python files/riskmanagement/risk_management_storage.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
