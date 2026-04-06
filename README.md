@@ -216,7 +216,23 @@ Implements the statistical tests reported in the vulnerability section. Tests wh
 
 📁 Code: [`files/vulnerability/vulnerability_analysis.py`](files/vulnerability/vulnerability_analysis.py)
 
-### 14. `ppa_financial_simulations.py` — PPA financial risk simulations and DSCR analysis
+### 14. `debt_financing_assumptions.py` — Derive debt service estimates from financing assumptions
+
+Computes the annual and monthly debt service obligations used as the DSCR benchmark in `ppa_financial_simulations.py`, using the Capital Recovery Factor (CRF) method. All parameter values and sources are documented inline.
+
+| Parameter | Value | Source |
+|---|---|---|
+| Capital cost | $1,024/kW | IRENA (2025) |
+| Nominal WACC | 6.25% | NREL ATB (2024) |
+| Project life | 25 years | NREL ATB (2024) |
+| **Monthly debt service (nominal)** | **$683,474** | Derived |
+| Annual debt service (nominal) | $8,201,688 | Derived |
+
+> No input files required — run this to verify or update the financing assumptions before running `ppa_financial_simulations.py`. If assumptions change, update the `MONTHLY_DEBT_SERVICE` and `ANNUAL_DEBT_SERVICE` constants in `ppa_financial_simulations.py` to match.
+
+📁 Code: [`files/ppasimulations/debt_financing_assumptions.py`](files/ppasimulations/debt_financing_assumptions.py)
+
+### 15. `ppa_financial_simulations.py` — PPA financial risk simulations and DSCR analysis
 
 Implements the physical PPA simulation framework from Section 3.4, quantifying combined price and volume risk across 48 sampled grid cells in the West and South load zones (2020–2024).
 
@@ -296,7 +312,10 @@ python files/pricemerge/price_merge.py
 # Step 13: Bartlett's test, Welch's ANOVA, and proportions z-tests
 python files/vulnerability/vulnerability_analysis.py
 
-# Step 14: PPA financial risk simulations and DSCR analysis
+# Step 14: derive debt service estimates from financing assumptions
+python files/ppasimulations/debt_financing_assumptions.py
+
+# Step 15: PPA financial risk simulations and DSCR analysis
 python files/ppasimulations/ppa_financial_simulations.py
 ```
 
