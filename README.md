@@ -22,7 +22,7 @@ Downloads hourly 100m wind velocity components (u and v) from the [Copernicus Cl
 | Period | 1950–2024 |
 | Output format | GRIB (one file per year, saved to `era5_wind_data/`) |
 
-📁 Code: [`files/downloaddata/era5_wind_download.py`](files/downloaddata/era5_wind_download.py)
+📁 Code: [`files/downloaddata/era5_wind_download.py`](files/downloaddata/exploratory_drought_hazard)
 
 ### 2. `ercot_spatial_grid.py` — Assign ERA5 grid cells to ERCOT load zones
 
