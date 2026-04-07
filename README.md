@@ -329,6 +329,28 @@ Evaluates a standalone layer-based insurance contract as a risk management strat
 
 📁 Code: [`files/riskmanagement/risk_management_insurance.py`](files/riskmanagement/risk_management_insurance.py)
 
+### 20. `risk_management_reserve_insurance.py` — Risk management: reserve fund + insurance (Cell 6_23)
+
+Evaluates a layered reserve fund and insurance strategy, combining a self-funded lower layer with a premium-based upper layer, compared against the unhedged baseline.
+
+**Layer structure:**
+
+| Layer | Coverage | Trigger | Cost |
+|---|---|---|---|
+| Producer retained | 0–15 MWh shortfall | — | Unhedged |
+| Reserve fund | 15–25 MWh shortfall | Spot ≥ $100/MWh | 15% of excess-energy spot sales; pays up to 50% of current balance per triggered hour |
+| Insurance | 25–30 MWh shortfall | $75 ≤ spot ≤ $5,000/MWh | 1.30× expected monthly payout |
+
+The reserve fund is simulated hourly as a running balance — it accumulates during good wind periods and depletes during sustained drought events, providing contingent protection at no fixed cost beyond the opportunity cost of withheld excess revenues. The insurance premium is fixed and deducted monthly regardless of trigger activity.
+
+| Output | Description |
+|---|---|
+| `6_23_monthly_reserve_insurance.csv` | Monthly revenue, reserve activity, insurance payouts, and DSCR: baseline vs structured |
+| `6_23_annual_dscr_reserve_insurance.csv` | Annual DSCR: baseline vs structured |
+| Figures | Monthly revenue comparison, monthly DSCR time series, annual DSCR bar chart, reserve balance over time |
+
+📁 Code: [`files/riskmanagement/risk_management_reserve_insurance.py`](files/riskmanagement/risk_management_reserve_insurance.py)
+
 ## Setup
 
 **1. Install dependencies**
@@ -407,6 +429,9 @@ python files/riskmanagement/risk_management_diversification.py
 
 # Step 19: risk management — insurance only (Cell 6_23)
 python files/riskmanagement/risk_management_insurance.py
+
+# Step 20: risk management — reserve fund + insurance (Cell 6_23)
+python files/riskmanagement/risk_management_reserve_insurance.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
