@@ -310,6 +310,25 @@ Evaluates three diversification strategies against the baseline (100 MW concentr
 
 📁 Code: [`files/riskmanagement/risk_management_diversification.py`](files/riskmanagement/risk_management_diversification.py)
 
+### 19. `risk_management_insurance.py` — Risk management: insurance only (Cell 6_23)
+
+Evaluates a standalone layer-based insurance contract as a risk management strategy for the representative West load zone cell, covering a defined MWh shortfall slice above a price trigger.
+
+**Insurance structure:** Payout = insured layer MWh × max(spot − $50, 0), only when spot price ≥ $100/MWh. Primary specification: 15–30 MWh shortfall layer. The producer retains shortfall below the attachment point unhedged. Premium = 2.00× expected annual payout spread monthly.
+
+| Output | Description |
+|---|---|
+| `6_23_monthly_insurance_only.csv` | Monthly revenue, insurance payout, and DSCR: baseline vs insured |
+| `6_23_annual_dscr_insurance_only.csv` | Annual DSCR: baseline vs insured |
+| `6_23_insurance_threshold_sensitivity.csv` | Grid search results across price triggers ($75–$500/MWh) and attachment points (10–30 MWh) — VaR improvement and net cost per combination |
+| Figures | Monthly revenue comparison, monthly DSCR, annual DSCR bar chart, VaR99 improvement heatmap across threshold grid |
+
+> **Premium loading:** A 2.00× loading (100% above expected payout) is applied to reflect the typical cost of catastrophe-style insurance with significant basis risk and limited historical data for pricing.
+
+> **Sensitivity grid:** The threshold sensitivity analysis sweeps 72 combinations of price trigger and attachment point, producing a heatmap of VaR99 improvement to support parameter selection.
+
+📁 Code: [`files/riskmanagement/risk_management_insurance.py`](files/riskmanagement/risk_management_insurance.py)
+
 ## Setup
 
 **1. Install dependencies**
@@ -385,6 +404,9 @@ python files/riskmanagement/risk_management_storage.py
 
 # Step 18: risk management — geographic diversification
 python files/riskmanagement/risk_management_diversification.py
+
+# Step 19: risk management — insurance only (Cell 6_23)
+python files/riskmanagement/risk_management_insurance.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
