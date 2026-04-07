@@ -286,6 +286,30 @@ Evaluates two layered risk management strategies against the unhedged baseline f
 > **Battery source:** NREL (2025). *Cost Projections for Utility-Scale Battery Storage: 2025 Update.* https://docs.nrel.gov/docs/fy25osti/93281.pdf
 
 📁 Code: [`files/riskmanagement/risk_management_storage.py`](files/riskmanagement/risk_management_storage.py)
+
+### 18. `risk_management_diversification.py` — Risk management: geographic diversification (Cell 6_23 baseline)
+
+Evaluates three diversification strategies against the baseline (100 MW concentrated at West cell 6_23), measuring their effect on revenue volatility, VaR, and monthly/annual DSCR.
+
+| Strategy | Configuration | Key result |
+|---|---|---|
+| 1 — Cross-zone | 50 MW West (6_23) + 50 MW South (38_37) | Reduces 99th percentile monthly VaR from -$446k to +$70k |
+| 2 — Cross-zone + Insurance | Strategy 1 + insurance on 20–30 MWh shortfall when price ≥ $100/MWh | Further reduces tail risk; premium = 1.30× expected annual payout |
+| 3 — Within-zone | 50 MW West site 1 (6_23) + 50 MW West site 2 (2_22) | Tests whether geographic spread within the West zone provides meaningful risk reduction — an interesting result given high within-zone CF correlation |
+
+> **Note on price convention:** West spot price (cell 6_23) is used throughout all scenarios — including the South cell — to isolate the effect of generation geography on financial risk, holding price exposure constant.
+
+| Output | Description |
+|---|---|
+| `diversification_cross_zone_monthly.csv` | Monthly revenue and DSCR: baseline vs 50/50 West+South |
+| `diversification_cross_zone_annual_dscr.csv` | Annual DSCR: baseline vs 50/50 West+South |
+| `diversification_cross_zone_insurance_monthly.csv` | Monthly revenue and DSCR: baseline vs diversified+insured |
+| `diversification_cross_zone_insurance_annual_dscr.csv` | Annual DSCR: baseline vs diversified+insured |
+| `diversification_within_zone_monthly.csv` | Monthly revenue and DSCR: baseline vs two West sites |
+| Figures | Monthly revenue, monthly DSCR, and annual DSCR comparison charts for all three strategies |
+
+📁 Code: [`files/riskmanagement/risk_management_diversification.py`](files/riskmanagement/risk_management_diversification.py)
+
 ## Setup
 
 **1. Install dependencies**
@@ -358,6 +382,9 @@ python files/ppasimulations/representative_cell_financial_risk.py
 
 # Step 17: risk management — battery storage and storage + insurance (Cell 6_23)
 python files/riskmanagement/risk_management_storage.py
+
+# Step 18: risk management — geographic diversification
+python files/riskmanagement/risk_management_diversification.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
