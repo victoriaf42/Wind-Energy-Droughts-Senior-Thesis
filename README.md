@@ -2,8 +2,7 @@
 
 Replication code for the data preparation pipeline used in:
 
-> Victoria Farella (2025). *Quantifying and Managing Wind Energy Drought Risk Under Physical Power Purchase Agreements in ERCOT
-*. University of North Carolina at Chapel Hill.
+> Victoria Farella (2025). Quantifying and Managing Wind Energy Drought Risk Under Physical Power Purchase Agreements in ERCOT. University of North Carolina at Chapel Hill.
 
 This repository contains two scripts that together produce the spatial ERA5 wind dataset used in the analysis. Run them in order.
 
