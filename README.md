@@ -148,7 +148,7 @@ Produces the load-zone-level drought event summaries and hourly flag files used 
 
 Set `CF_THRESHOLDS` to a list (e.g. `[0.06, 0.10, 0.15, 0.30]`) to produce files for multiple thresholds in one run — useful for the sensitivity analyses reported in the thesis.
 
-> **Dependency note:** This script requires `loadzone_capacity_summary.csv` produced by `price_capacity_prep.py` (Step 8, Task 2) for `pct_wind` values. Run Step 8 before this step.
+> **Dependency note:** This script requires `loadzone_capacity_summary.csv` produced by `capacity_summary.py' (Step 8) for `pct_wind` values. Run Step 8 before this step.
 
 📁 Code: [`files/lzdrought2024/lz_drought_detection_2020_2024.py`](files/lzdrought2024/lz_drought_detection_2020_2024.py)
 
@@ -374,6 +374,18 @@ Evaluates a structured PPA in which the buyer absorbs the top shortfall layer co
 
 📁 Code: [`files/riskmanagement/risk_management_buyer_sharing.py`](files/riskmanagement/risk_management_buyer_sharing.py)
 
+## Data
+
+The following input datasets are not included in this repository and must be obtained separately:
+
+| Dataset | Source | Used by |
+|---|---|---|
+| ERA5 100m wind (GRIB) | Downloaded via `era5_wind_download.py` (CDS API) | Steps 1–6, 9–11 |
+| ERCOT RTM Settlement Point Prices | https://www.ercot.com/mktinfo/prices | Steps 7, 12–13 |
+| EIA Form 860 plant files | https://www.eia.gov/electricity/data/eia860/ | Steps 8–10 |
+| Texas county load zone GeoJSON | QGIS — see Step 2 note | Step 2 |
+| Grid-cell sample files (`*_sample.csv`) | Constructed from ERA5 CF + ERCOT prices | Steps 15–21 |
+
 ## Setup
 
 **1. Install dependencies**
@@ -473,6 +485,22 @@ Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top o
 
 ---
 
-## References
+## Data Sources
 
+**ERA5 Reanalysis**
 Hersbach, H. et al. (2023). ERA5 hourly data on single levels from 1940 to present. *Copernicus Climate Change Service (C3S) Climate Data Store (CDS)*. https://doi.org/10.24381/cds.adbb2d47
+
+**ERCOT Settlement Point Prices**
+ERCOT (2025). Historical RTM Settlement Point Prices. Electric Reliability Council of Texas. https://www.ercot.com/mktinfo/prices
+
+**EIA Form 860 — Annual Electric Generator Report**
+U.S. Energy Information Administration (2025). Form EIA-860 Annual Electric Generator Report. https://www.eia.gov/electricity/data/eia860/
+
+**IRENA Capital Cost Benchmark**
+IRENA (2025). Renewable Power Generation Costs in 2024. International Renewable Energy Agency. https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2025/Jul/IRENA_TEC_RPGC_in_2024_2025.pdf
+
+**NREL Annual Technology Baseline**
+NREL (2024). Annual Technology Baseline. National Renewable Energy Laboratory. https://docs.nrel.gov/docs/fy25osti/91775.pdf
+
+**NREL Battery Storage Cost Projections**
+NREL (2025). Cost Projections for Utility-Scale Battery Storage: 2025 Update. National Renewable Energy Laboratory. https://docs.nrel.gov/docs/fy25osti/93281.pdf
