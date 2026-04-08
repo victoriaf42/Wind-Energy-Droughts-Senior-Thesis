@@ -351,6 +351,29 @@ The reserve fund is simulated hourly as a running balance — it accumulates dur
 
 📁 Code: [`files/riskmanagement/risk_management_reserve_insurance.py`](files/riskmanagement/risk_management_reserve_insurance.py)
 
+### 21. `risk_management_buyer_sharing.py` — Risk management: buyer risk sharing (Cell 6_23)
+
+Evaluates a structured PPA in which the buyer absorbs the top shortfall layer contingently in exchange for a discounted fixed price, combined with a third-party insurance middle layer.
+
+**Layer structure:**
+
+| Layer | Coverage | Trigger | Cost to producer |
+|---|---|---|---|
+| Producer retained | 0–15 MWh shortfall | — | Unhedged |
+| Insurance | 15–25 MWh shortfall | $75–$1,000/MWh | 1.30× expected monthly payout |
+| Buyer risk-sharing | 25–30 MWh shortfall | Price ≥ $100/MWh | Discount: $50.00 → $48.97/MWh |
+
+**Buyer discount pricing:** The required $/MWh discount is derived from the expected annual buyer payout loaded at 1.25×, divided by annual contracted MWh. The offered discount ($1.03/MWh) is compared against this required discount. The annual cost of the discount to the producer (~$246,829) is weighed against the expected annual buyer-share value received (~$197,222).
+
+| Output | Description |
+|---|---|
+| `6_23_buyer_discount_pricing.csv` | Required vs offered discount, annual buyer payout by year, producer net tradeoff |
+| `6_23_monthly_insurance_buyer_share.csv` | Monthly revenue, insurance payouts, buyer share, and DSCR: baseline vs structured |
+| `6_23_annual_dscr_insurance_buyer_share.csv` | Annual DSCR: baseline vs structured |
+| Figures | Buyer monthly payout distribution, monthly revenue comparison, monthly DSCR, annual DSCR bar chart |
+
+📁 Code: [`files/riskmanagement/risk_management_buyer_sharing.py`](files/riskmanagement/risk_management_buyer_sharing.py)
+
 ## Setup
 
 **1. Install dependencies**
@@ -432,6 +455,9 @@ python files/riskmanagement/risk_management_insurance.py
 
 # Step 20: risk management — reserve fund + insurance (Cell 6_23)
 python files/riskmanagement/risk_management_reserve_insurance.py
+
+# Step 21: risk management — buyer risk sharing (Cell 6_23)
+python files/riskmanagement/risk_management_buyer_sharing.py
 ```
 
 Before running `ercot_spatial_grid.py`, update the `INPUT_DIR` path at the top of the script to point to your local `data/` folder containing `Texas_County_LoadZones.geojson`.
