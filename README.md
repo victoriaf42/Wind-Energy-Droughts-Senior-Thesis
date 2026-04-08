@@ -363,7 +363,7 @@ Evaluates a structured PPA in which the buyer absorbs the top shortfall layer co
 | Insurance | 15–25 MWh shortfall | $75–$1,000/MWh | 1.30× expected monthly payout |
 | Buyer risk-sharing | 25–30 MWh shortfall | Price ≥ $100/MWh | Discount: $50.00 → $48.97/MWh |
 
-**Buyer discount pricing:** The required $/MWh discount is derived from the expected annual buyer payout loaded at 1.25×, divided by annual contracted MWh. The offered discount ($1.03/MWh) is compared against this required discount.The annual cost of the discount to the producer (~$246,829) is weighed against the expected annual buyer-share value received (~$197,222).
+**Buyer discount pricing:** The required $/MWh discount is derived from the expected annual buyer payout loaded at 1.25×, divided by annual contracted MWh. The offered discount ($1.03/MWh) is compared against this required discount.The annual cost of the discount to the producer (approximately $246,829) is weighed against the expected annual buyer-share value received (approximately $197,222).
 
 | Output | Description |
 |---|---|
